@@ -1,0 +1,86 @@
+<?php include_once('elements/head.phtml'); ?>
+<?php include_once('elements/menu.phtml');
+
+$week = date('W');
+$week=36;
+$orderModel = $this->getModel('orders');
+$orders = $orderModel->getAllByWeek($week);
+
+
+?>
+
+
+    <h1>
+        <small><?php echo "Plan produkcji - Tydzień ";
+            echo $week; ?></small>
+    </h1>
+    <hr>
+    <h5>Legenda</h5>
+<div class="btn-group">
+<button class="btn-secondary">Nie rozpoczęte</button>
+<button class="btn-warning">W realizacji</button>
+<button class="btn-success">Gotowe</button>
+<button class="btn-danger">Wysłane</button>
+</div>
+    <hr>
+    <table id="table" class="table table-striped table-hover">
+
+        <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>Nr zamówienia</th>
+            <th>Nazwa klienta</th>
+            <th>Numer wewnętrzny zamówienia klienta</th>
+            <th>Data zamówienia</th>
+            <th>Termin realizacji</th>
+            <th>Status</th>
+            <th>Tydzień nr</th>
+            <th>Akcje</th>
+
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php
+        /**
+         * @var $order Order
+         */
+
+        foreach ($orders as $nr => $order):
+
+            ?>
+            <tr <?php if (!empty($order)) {
+                if ($order->getOrderstatus() == "Nie rozpoczęte") echo 'class="table-secondary"';
+                if ($order->getOrderstatus() == "W realizacji") echo 'class="table-warning"';
+                if ($order->getOrderstatus() == "Gotowe") echo 'class="table-success"';
+                if ($order->getOrderstatus() == "Wysłane") echo 'class="table-danger"';
+            } ?>>
+
+                <th scope="row"><?php echo $nr + 1; ?></th>
+                <td><?php if (!empty($order)) echo $order->getCustomerorderida() . "/" . $order->getCustomerorderidb(); ?>
+                </td>
+                <td><?php if (!empty($order)) echo $order->getCustomername(); ?>
+                </td>
+                <td><?php if (!empty($order)) echo $order->getCustomerexternalorderid(); ?></td>
+                <td><?php if (!empty($order)) echo $order->getOrderdate(); ?></td>
+                <td><?php if (!empty($order)) echo $order->getOrderdeadline(); ?></td>
+                <td><?php if (!empty($order)) echo $order->getOrderstatus(); ?></td>
+                <td><?php if (!empty($order)) echo $order->getOrderpositioninschedule(); ?></td>
+                <td>
+                    <button class="btn btn-danger"><a href="?action=orderaddedit&id=<?php echo $order->getId(); ?>"
+                                                      data-placement="right">Edytuj </a>
+                    </button>
+
+
+                    <button class="btn btn-danger"><a href="?action=orderdelete&id=<?php echo $order->getId(); ?>"
+                                                      data-placement="right">Usuń</a>
+                    </button>
+                </td>
+
+            </tr>
+
+        <?php endforeach; ?>
+        </tbody>
+
+    </table>
+<?php include_once('elements/footer.phtml'); ?>

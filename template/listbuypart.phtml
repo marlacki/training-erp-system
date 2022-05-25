@@ -1,0 +1,51 @@
+<?php
+
+$listbuypartModel = $this->getModel('listbuypart');
+$listbuyparts=$listbuypartModel->getAll();
+
+?>
+
+<?php include_once('elements/head.phtml'); ?>
+<?php include_once('elements/menu.phtml'); ?>
+
+
+    <table class="table">
+        <thead class="table-dark">
+
+
+            <tr>
+                <td>#</td>
+                <td>Nazwa przedmiotu</td>
+                <td>Ilość</td>
+                <td>Rozmiar</td>
+                <td>Wymiar A</td>
+                <td>Wymiar B</td>
+                <td>Uwagi - Indeks zakupowy</td>
+            </tr>
+            </thead>
+            <tbody>
+
+            <?php
+            if (!empty($listbuyparts)) {
+
+
+                        foreach ($listbuyparts as $nr => $listbuypart):?>
+
+
+            <tr>
+                <th><?php echo $nr+1; ?></th>
+                <td><?php echo $listbuypart->getBuypartname(); ?></td>
+                <td><?php echo $listbuypart->getBuypartamount(); ?></td>
+                <td><?php echo $listbuypart->getBuypartsize(); ?></td>
+                <td><?php echo $listbuypart->getBuypartdima(); ?></td>
+                <td><?php echo $listbuypart->getBuypartdimb(); ?></td>
+                <td><?php echo $listbuypart->getBuypartnotes(); ?></td>
+                        </tr>
+                    <?php endforeach;
+
+            }
+            ?>
+            </tbody>
+        </table>
+
+<?php include_once('elements/footer.phtml'); ?>

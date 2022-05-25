@@ -1,0 +1,139 @@
+<?php
+
+
+$projectModel = $this->getModel('project');
+$sizeModel = $this->getModel('size');
+$versionModel = $this->getModel('version');
+
+
+$project = $projectModel->getOneById($this->elementId);
+
+if (!empty($project)) {
+    $projectindex = $project->getProjectname();
+    $projectsize = $project->getProjectsize();
+    $projectversion = $project->getProjectversion();
+}
+
+
+include_once('elements/head.phtml');
+include_once('elements/menu.phtml');
+
+?>
+
+
+    <form name="form" id="form" method="post" class="myforms">
+
+        <input type="hidden" name="model[project][0][id]"
+               value="<?php if (!empty($project)) echo $project->getId(); ?>">
+
+        <ul class="list-group list-group-horizontal-lg md-2">
+            <li class="list-group-item list-group-item-secondary col-2">Indeks produktu</li>
+            <li class="list-group-item col-2"><input type="text" id="model[project][0][projectname]"
+                                                     class="form-control"
+                                                     name="model[project][0][projectname]"
+                                                     id="model[project][0][projectname]"
+                                                     value="<?php if (!empty($project)) echo $project->getProjectname(); ?>">
+            </li>
+        </ul>
+        <ul class="list-group list-group-horizontal-lg md-2">
+            <li class="list-group-item list-group-item-secondary col-2">Rozmiar</li>
+            <li class="list-group-item col-2"><?php if (!empty($project)){ ?><input type='text' class="form-control"
+                                                                                    name='model[project][0][projectsize]'
+                                                                                    id="model[project][0][projectsize]"
+                                                                                    value="<?php echo $project->getProjectsize(); ?>">
+            </li>
+            " <?php }
+            else { ?>
+                <select class='form-control md-2' name='model[project][0][projectsize]'
+                        id='model[project][0][projectsize]'
+                        required>
+                    <option value='' disabled selected>Wybierz rozmiar</option><?php
+                    foreach ($sizeModel->getAll() as $size): ?>
+                        <option value="<?php echo $size->getAvaliablesize(); ?>"><?php echo $size->getAvaliablesize(); ?></option>
+                    <?php endforeach; ?>
+
+                </select></li>
+            <?php } ?>
+        </ul>
+        </ul>
+        <ul class="list-group list-group-horizontal-lg md-2">
+            <li class="list-group-item list-group-item-secondary col-2">Wersja produktu</li>
+            <li class="list-group-item col-2"><?php if (!empty($project)){ ?><input type='text'
+                                                                                    class="form-control"
+                                                                                    name='model[project][0][projectversion]'
+                                                                                    id="model[project][0][projectversion]"
+                                                                                    value="<?php echo $project->getProjectversion(); ?>">
+            </li>
+            " <?php }
+            else { ?>
+                <select class='form-control md-2' name='model[project][0][projectversion]'
+                        id='model[project][0][projectversion]' required>
+                    <option value='' disabled selected>Wybierz wersję</option><?php
+                    foreach ($versionModel->getAll() as $version): ?>
+                        <option value="<?php echo $version->getVersion(); ?>"><?php echo $version->getVersion(); ?></option>
+                    <?php endforeach; ?>
+
+                </select></li>
+            <?php } ?>
+        </ul>
+        <ul class="list-group list-group-horizontal-lg md-2">
+            <li class="list-group-item list-group-item-secondary col-2">Uwagi</li>
+            <li class="list-group-item col-2"><input type="text" name="model[project][0][projectnotes]"
+                                                     class="form-control"
+                                                     value="<?php if (!empty($project)) echo $project->getProjectnotes(); ?>">
+            </li>
+        </ul>
+
+
+        <br>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="laser-tab" data-toggle="tab" href="#laser" role="tab"
+                   aria-selected="true" aria-controls="laser">Laser</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="material-tab" data-toggle="tab" href="#material" role="tab"
+                   aria-selected="false" aria-controls="material">Materiał</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="turning-tab" data-toggle="tab" role="tab" href="#turning"
+                   aria-selected="false" aria-controls="turning">Tokarstwo</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="buypart-tab" data-toggle="tab" role="tab" href="#buypart"
+                   aria-selected="false" aria-controls="buypart">Elementy zakupowe</a>
+            </li>
+        </ul>
+        <br>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <?php
+            include_once('projectlaser.phtml');
+            include_once('projectmaterial.phtml');
+            include_once('projectturning.phtml');
+            include_once('projectbuypart.phtml');
+            ?></div>
+
+    </form>
+    <br>
+    <div class="col-sm-12">
+        <button id="allsubmit" name="allsubmit" class="btn btn-success float-right">Zapisz</button>
+        <button id="addprojectbuypart" name="addprojectbuypart" class="btn btn-success float-right">Dodaj element
+            zakupowy
+        </button>
+        <button id="addprojectmaterial" name="addprojectmaterial" class="btn btn-success float-right">Dodaj materiał
+        </button>
+        <button id="addprojectturning" name="addprojectturning" class="btn btn-success float-right">Dodaj tokarstwo
+        </button>
+        <button id="addprojectlaser" name="addprojectlaser" class="btn btn-success float-right">Dodaj detal laserowy
+        </button>
+    </div>
+    <br>
+    <br>
+
+    <script src="template/js/project.js"></script>
+
+<?php
+
+include_once('elements/footer.phtml'); ?>

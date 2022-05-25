@@ -1,0 +1,51 @@
+<?php
+
+$listmaterialModel = $this->getModel('listmaterial');
+$listmaterials=$listmaterialModel->getAll();
+
+?>
+
+<?php include_once('elements/head.phtml'); ?>
+<?php include_once('elements/menu.phtml'); ?>
+
+
+    <table class="table">
+        <thead class="table-dark">
+            <tr>
+                <td>#</td>
+                <td>Typ materiału</td>
+                <td>Ilość</td>
+                <td>Długość</td>
+                <td>Szerokość</td>
+                <td>Wysokośc</td>
+                <td>Grubość</td>
+            </tr>
+            </thead>
+            <tbody>
+
+            <?php
+            if (!empty($listmaterials)) {
+
+
+                foreach ($listmaterials as $nr => $listmaterial):?>
+
+
+                    <tr>
+                        <th><?php echo $nr+1; ?></th>
+                        <td><?php echo $listmaterial->getMaterialtype(); ?></td>
+                        <td><?php echo $a=$listmaterial->getMaterialamount();
+                            //                        $b=$listmaterial->getProductamount(); $c=$a*$b; echo $c;?><!--</td>-->
+
+                        <td><?php echo $listmaterial->getMateriallength(); ?></td>
+                        <td><?php echo $listmaterial->getMaterialdimensiona(); ?></td>
+                        <td><?php echo $listmaterial->getMaterialdimensionb(); ?></td>
+                        <td><?php echo $listmaterial->getMaterialthickness(); ?></td>
+                    </tr>
+                <?php endforeach;
+
+            }
+            ?>
+            </tbody>
+        </table>
+
+<?php include_once('elements/footer.phtml'); ?>

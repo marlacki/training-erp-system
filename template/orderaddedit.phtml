@@ -1,0 +1,332 @@
+<?php
+/**
+ * @var $this Template
+ * @var $contactsModel ContactsModel
+ * @var $categoriesModel CategoriesModel
+ */
+$ordersModel = $this->getModel('orders');
+$productModel = $this->getModel('products');
+$sizeModel = $this->getModel('size');
+$versionModel = $this->getModel('version');
+$statusModel = $this->getModel('status');
+$weekModel = $this->getModel('week');
+
+
+/**
+ * @var $contact Contact
+ */
+
+$order = $ordersModel->getOneById($this->elementId);
+
+
+?>
+
+<?php include_once('elements/head.phtml'); ?>
+
+
+
+
+
+<?php include_once('elements/menu.phtml'); ?>
+
+
+<h1><small><?php if (!empty($order)) {
+            echo "Edytuj zamówienie";
+        } else echo "Dodaj zamówienie"; ?></small></h1>
+<hr>
+<form name="form" id="form" method="post" class="myforms">
+    <input type="hidden" name="model[orders][0][id]"
+           value="<?php if (!empty($order)) echo $order->getId(); ?>">
+
+
+    <div class="input-group mb-2">
+        <span class="input-group-text">Nazwa klienta</span>
+        <input type="text" class="form-control" name="model[orders][0][customername]"
+               id="model[orders][0][customername]" placeholder=""
+               required
+               value="<?php if (!empty($order)) echo $order->getCustomername(); ?>">
+    </div>
+
+    <div class="input-group mb-2">
+        <span class="input-group-text">Nr zamowienia</span>
+        <input type="text" class="form-control" name="model[orders][0][customerorderida]"
+               id="model[orders][0][customerorderida]"
+               placeholder="" required
+               value="<?php if (!empty($order)) {
+                   echo $order->getCustomerorderida();
+                   $orderida = $order->getCustomerorderida();
+               }
+               ?>">
+        <span class="input-group-text">/</span>
+        <input type="text" class="form-control" name="model[orders][0][customerorderidb]"
+               id="model[orders][0][customerorderidb]"
+               placeholder=""
+               value="<?php if (!empty($order)) {
+                   echo $order->getCustomerorderidb();
+                   $orderidb = $order->getCustomerorderidb();
+               } else {
+                   $year = date("Y");
+                   echo $year;
+                   $orderidb = $year;
+               } ?>">
+    </div>
+
+    <div class="input-group mb-2">
+        <span class="input-group-text">Numer zamówienia wewnętrznego klienta</span>
+        <input type="text" class="form-control" name="model[orders][0][customerexternalorderid]"
+               id="model[orders][0][customerexternalorderid]"
+               placeholder=""
+               value="<?php if (!empty($order)) echo $order->getCustomerexternalorderid(); ?>">
+    </div>
+
+
+    <div class="input-group mb-2">
+        <span class="input-group-text">Data zamówienia</span>
+        <input class="form-control" name="model[orders][0][orderdate]"
+                width="auto" placeholder=""
+               value="<?php if (!empty($order)) echo $order->getOrderdate(); ?>">
+        <span class="input-group-text">Termin realizacji</span>
+        <input class="form-control" name="model[orders][0][orderdeadline]"
+               width="auto" placeholder=""
+               value="<?php if (!empty($order)) echo $order->getOrderdeadline(); ?>">
+    </div>
+
+    <div class="input-group mb-5">
+        <span class="input-group-text">Dodatkowe informacje do zamówienia</span>
+        <input type="text" class="form-control" name="model[orders][0][ordernotes]"
+               id="model[orders][0][ordernotes]" placeholder=""
+               value="<?php if (!empty($order)) echo $order->getOrdernotes(); ?>">
+
+    </div>
+    <div class="input-group mb-5">
+        <span class="input-group-text">Status</span>
+        <select class='form-control' name="model[orders][0][orderstatus]"
+                id="model[orders][0][orderstatus]" required>
+            <option value='<?php if (!empty($order)) {
+            echo $order->getOrderstatus(); ?>'
+                    selected><?php echo $order->getOrderstatus();
+                } else {
+                    echo "readonly='readonly' selected>Wybierz status";
+                } ?></option><?php
+            foreach ($statusModel->getAll() as $status) {
+                ?>
+                <option value="<?php echo $status->getStatus(); ?>"><?php echo $status->getStatus(); ?></option>
+            <?php } ?>
+
+        </select>
+
+    </div>
+
+    <div class="input-group mb-5">
+        <span class="input-group-text">Pozycja w planie produkcyjnym</span>
+        <select class='form-control' name="model[orders][0][orderpositioninschedule]"
+                id="model[orders][0][orderpositioninschedule]" required>
+            <option value='<?php if (!empty($order)) {
+            echo $order->getOrderpositioninschedule(); ?>'
+                    selected><?php echo $order->getOrderpositioninschedule();
+                } else {
+                    echo "readonly='readonly' selected>Wybierz tydzień produkcyjny";
+                } ?></option><?php
+            foreach ($weekModel->getAll() as $week) {
+                ?>
+                <option value="<?php echo $week->getWeek(); ?>"><?php echo $week->getWeek(); ?></option>
+            <?php } ?>
+
+        </select>
+
+    </div>
+
+
+    <table class="table" id="producttable">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nazwa produktu</th>
+            <th scope="col">Rozmiar</th>
+            <th scope="col">Wersja</th>
+            <th scope="col">Ilość</th>
+            <th scope="col">Mocowanie</th>
+            <th scope="col">Kolor</th>
+            <th scope="col">Informacje dodatkowe</th>
+            <th scope="col">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php
+        if (!empty($order)) {
+            /**
+             * @var $contact Contact
+             */
+
+            $products = $productModel->getMatchingOrders($orderida, $orderidb);
+            $nr = 0;
+            if (!empty($products)) {
+                foreach ($products as $nr => $product):?>
+
+                    <tr>
+
+                        <input type="hidden" name="model[products][<?php echo $nr; ?>][id]"
+                               value="<?php if (!empty($product)) echo $product->getId(); ?>">
+                        <input type="hidden" name="model[products][<?php echo $nr; ?>][orderida]"
+                               id="model[products][<?php echo $nr; ?>][orderida]"
+                               value="<?php if (!empty($order)) echo $order->getCustomerorderida(); ?>">
+                        <input type="hidden" name="model[products][<?php echo $nr; ?>][orderidb]"
+                               id="model[products][<?php echo $nr; ?>][orderidb]"
+                               value="<?php if (!empty($order)) echo $order->getCustomerorderidb(); ?>">
+
+                        <td><input type="text" class="form-control"
+                                   name="model[products][<?php echo $nr; ?>][productid]" readonly="readonly"
+                                   id="model[products][<?php echo $nr; ?>][productid]" placeholder=""
+                                   value="<?php if (!empty($product)) echo $product->getProductid(); else echo $nr; ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[products][<?php echo $nr; ?>][productname]"
+                                   id="model[products][<?php echo $nr; ?>][productname]" placeholder=""
+                                   value="<?php if (!empty($product)) echo $product->getProductname(); ?>">
+                        </td>
+                        <td><select class='form-control' name="model[products][<?php echo $nr; ?>][productsize]"
+                                    id="model[products][<?php echo $nr; ?>][productsize]" required>
+                                <option value='<?php if (!empty($product)) {
+                                echo $product->getProductsize(); ?>' selected><?php echo $product->getProductsize();
+                                    } else {
+                                        echo "readonly='readonly' selected>Wybierz rozmiar>";
+                                    } ?></option><?php
+                                foreach ($sizeModel->getAll() as $size) {
+                                    ?>
+                                    <option value="<?php echo $size->getAvaliablesize(); ?>"><?php echo $size->getAvaliablesize(); ?></option>
+                                <?php } ?>
+
+                            </select>
+                        </td>
+                        <td><select class='form-control' name="model[products][<?php echo $nr; ?>][productversion]"
+                                    id="model[products][<?php echo $nr; ?>][productversion]" required>
+                                <option value='<?php if (!empty($product)) {
+                                echo $product->getProductversion(); ?>'
+                                        selected><?php echo $product->getProductversion();
+                                    } else {
+                                        echo "readonly='readonly' selected>Wybierz wersję>";
+                                    } ?></option><?php
+                                foreach ($versionModel->getAll() as $version) {
+                                    ?>
+                                    <option value="<?php echo $version->getVersion(); ?>"><?php echo $version->getVersion(); ?></option>
+                                <?php } ?>
+
+                            </select>
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[products][<?php echo $nr; ?>][productamount]"
+                                   id="model[products][<?php echo $nr; ?>][productamount]" placeholder=""
+                                   value="<?php if (!empty($product)) echo $product->getProductamount(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[products][<?php echo $nr; ?>][productmount]"
+                                   id="model[products][<?php echo $nr; ?>][productmount]" placeholder=""
+                                   value="<?php if (!empty($product)) echo $product->getProductmount(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[products][<?php echo $nr; ?>][productcolour]"
+                                   id="model[products][<?php echo $nr; ?>][productcolour]" placeholder=""
+                                   value="<?php if (!empty($product)) echo $product->getProductcolour(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[products][<?php echo $nr; ?>][productnotes]"
+                                   id="model[products][<?php echo $nr; ?>][productnotes]" placeholder=""
+                                   value="<?php if (!empty($product)) echo $product->getProductnotes(); ?>">
+                        </td>
+
+                        <td><select class='form-control' name="model[products][<?php echo $nr; ?>][productstatus]"
+                                    id="model[products][<?php echo $nr; ?>][productstatus]" required>
+                                <option value='<?php if (!empty($product)) {
+                                echo $product->getProductstatus(); ?>'
+                                        selected><?php echo $product->getProductstatus();
+                                    } else {
+                                        echo "readonly='readonly' selected>Wybierz wersję>";
+                                    } ?></option><?php
+                                foreach ($statusModel->getAll() as $status) {
+                                    ?>
+                                    <option value="<?php echo $status->getStatus(); ?>"><?php echo $status->getStatus(); ?></option>
+                                <?php } ?>
+
+                            </select>
+                        </td>
+
+                    </tr>
+
+                <?php endforeach;
+            }
+        } ?>
+        </tbody>
+    </table>
+</form>
+
+
+<div class="btn-group" role="group">
+    <button id="allsubmit" class="btn btn-success float-right">Zapisz</button>
+    <button id="addproduct" name="addproduct" class="btn btn-success float-right">Dodaj produkt</button>
+</div>
+
+
+<input id="sizedropdown" type="hidden" value="<?php foreach ($sizeModel->getAll() as $size): {
+    echo "<option value='";
+    echo $size->getAvaliablesize();
+    echo "'>";
+    echo $size->getAvaliablesize();
+    echo "</option>";
+} endforeach; ?>">
+<input id="versiondropdown" type="hidden" value="<?php foreach ($versionModel->getAll() as $version): {
+    echo "<option value='";
+    echo $version->getVersion();
+    echo "'>";
+    echo $version->getVersion();
+    echo "</option>";
+} endforeach; ?>">
+<input id="statusdropdown" type="hidden" value="<?php foreach ($statusModel->getAll() as $status): {
+    echo "<option value='";
+    echo $status->getStatus();
+    echo "'>";
+    echo $status->getStatus();
+    echo "</option>";
+} endforeach; ?>">
+
+
+<script>
+
+    $("#allsubmit").on("click", function () {
+        $('.myforms').each(function () {
+            $(this).submit();
+
+        });
+    });
+
+
+    document.getElementById('addproduct').addEventListener('click', function () {
+        //Try to get tbody first with jquery children. works faster!
+        var tbody = $('#producttable').children('tbody');
+        var orderida = document.getElementById('model[orders][0][customerorderida]').value;
+        var orderidb = document.getElementById('model[orders][0][customerorderidb]').value;
+        var sizedropdown = document.getElementById('sizedropdown').value;
+        var versiondropdown = document.getElementById('versiondropdown').value;
+        var statusdropdown = document.getElementById('statusdropdown').value;
+        var table = tbody.length ? tbody : $('#producttable');
+        var tr = $('#producttable').children('tbody').children('tr');
+        console.log(tr.length);
+        if (tr.length > 0) {
+            var i = tr.length;
+        } else {
+            var i = 0;
+        }
+        var j = i + 1;
+
+        table.append('<tr><input type="hidden"  name="model[products][' + i + '][id]" value=""><input  type="hidden" name="model[products][' + i + '][orderida]" id="model[products][' + i + '][orderida]" value="' + orderida + '"><input  type="hidden" name="model[products][' + i + '][orderidb]" id="model[products][' + i + '][orderidb]" value="' + orderidb + '"><td><input type="text"  class="form-control" name="model[products][' + i + '][productid]" id="model[products][' + i + '][productid]" placeholder="" value="' + j + '"></td><td><input type="text"  class="form-control" name="model[products][' + i + '][productname]" id="model[products][' + i + '][productname]" placeholder="" ></td><td><select class="form-control" name="model[products][' + i + '][productsize]" id="model[products][' + i + '][productsize]" required> <option value="" disabled selected>Wybierz rozmiar</option>' + sizedropdown + '</select> </td><td><select class="form-control" name="model[products][' + i + '][productversion]" id="model[products][' + i + '][productversion]" required> <option value="" disabled selected>Wybierz wersję</option>' + versiondropdown + '</select> </td><td><input type="text"  class="form-control" name="model[products][' + i + '][productamount]" id="model[products][' + i + '][productamount]" placeholder="" ></td><td><input type="text"  class="form-control" name="model[products][' + i + '][productmount]" id="model[products][' + i + '][productmount]" placeholder="" ></td><td><input type="text"  class="form-control" name="model[products][' + i + '][productcolour]" id="model[products][' + i + '][productcolour]" placeholder="" ></td><td><input type="text"  class="form-control" name="model[products][' + i + '][productnotes]" id="model[products][' + i + '][productnotes]" placeholder="" value=""></td><td><select class="form-control" name="model[products][' + i + '][productstatus]" id="model[products][' + i + '][productstatus]" required> <option value="" disabled selected>Wybierz status</option>' + statusdropdown + '</select> </td></tr>');
+
+
+    });
+
+
+</script>
+
+
+
+<?php include_once("elements/footer.phtml"); ?>
+

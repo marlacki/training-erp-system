@@ -1,0 +1,220 @@
+<?php
+/**
+ * @var $this Template
+ * @var $contactsModel ProductModel
+ * @var $categoriesModel ShopingCartModel
+ */
+
+
+$orderModel = $this->getModel('orders');
+$ordercartModel = $this->getModel('ordercart');
+$productModel = $this->getModel('products');
+$listallModel = $this->getModel('listall');
+
+
+/**
+ * @var $contacts array of Product
+ */
+$ordercarts = $ordercartModel->getAll();
+
+$holdid = '';
+?>
+
+<?php include_once('elements/head.phtml'); ?>
+
+<?php include_once('elements/menu.phtml');
+?>
+
+
+<h1>
+    <small><?php echo "Zamówienia w realizacji" ?></small>
+</h1>
+<hr>
+<div>
+    <a href="?action=ordercartlist">
+
+        <button type="button" class="btn btn-success">
+            <span class="glyphicon glyphicon-plus">Szczegóły</span>
+        </button>
+    </a>
+    <!--    <button id="allsubmit" class="btn btn-success float-right">Lista elementów zakupowych</button>-->
+    <!--    <button id="allsubmit" class="btn btn-success float-right">Lista laser</button>-->
+    <!--    <button id="allsubmit" class="btn btn-success float-right">Lista tokarstwo</button>-->
+</div>
+<hr>
+
+<form name="form" id="form" method="post" class="myforms">
+    <div>
+        <?php
+        /**
+         * @var $order Order
+         */
+        $index = 0;
+        foreach ($ordercarts as $nr => $ordercart) {
+            $order = $orderModel->getOneById($ordercart->getOrderid());
+            ?>
+            <table id="table" class="table table-striped table-hover">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nr zamówienia</th>
+                    <th>Nazwa klienta</th>
+                    <th>Numer wewnętrzny zamówienia klienta</th>
+                    <th>Data zamówienia</th>
+                    <th>Termin realizacji</th>
+                    <th>Status</th>
+                    <th>Tydzień produkcyjny</th>
+                    <th>Akcje</th>
+
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr>
+
+                    <th scope="row"><?php echo $nr + 1; ?></th>
+                    <td><?php if (!empty($order)) echo $order->getCustomerorderida() . "/" . $order->getCustomerorderidb(); ?>
+                    </td>
+                    <td><?php if (!empty($order)) echo $order->getCustomername(); ?>
+                    </td>
+                    <td><?php if (!empty($order)) echo $order->getCustomerexternalorderid(); ?></td>
+                    <td><?php if (!empty($order)) echo $order->getOrderdate(); ?></td>
+                    <td><?php if (!empty($order)) echo $order->getOrderdeadline(); ?></td>
+                    <td><?php if (!empty($order)) echo $order->getOrderstatus(); ?></td>
+                    <td><?php if (!empty($order)) echo $order->getOrderpositioninschedule(); ?></td>
+                    <td>
+                        <button class="btn btn-danger"><a href="?action=orderaddedit&id=<?php echo $order->getId(); ?>"
+                                                          data-placement="right">Edytuj
+                            </a></button>
+
+                    </td>
+
+                </tr>
+                <tr>
+            <td colspan="9">
+            <?php
+            $orderida = $order->getCustomerorderida();
+            $orderidb = $order->getCustomerorderidb();
+
+            $products = $productModel->getMatchingOrders($orderida, $orderidb);
+            if (!empty($products)) {
+
+
+                ?>
+                <table class="table" id="producttable<?php echo $nr; ?>">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">#</th>
+                        <th scope="col">Nazwa produktu</th>
+                        <th scope="col">Rozmiar</th>
+                        <th scope="col">Wersja</th>
+                        <th scope="col">Ilość</th>
+                        <th scope="col">Mocowanie</th>
+                        <th scope="col">Kolor</th>
+                        <th scope="col">Informacje dodatkowe</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <?php foreach ($products as $x => $product) { ?>
+                        <tr <?php if (!empty($order)) {
+                            if ($order->getOrderstatus() == "Nie rozpoczęte") echo 'class="table-secondary"';
+                            if ($order->getOrderstatus() == "W realizacji") echo 'class="table-warning"';
+                            if ($order->getOrderstatus() == "Gotowe") echo 'class="table-success"';
+                            if ($order->getOrderstatus() == "Wysłane") echo 'class="table-danger"';
+                        } ?> >
+                            <td><input class="form-check-input" type="checkbox" name="model[chosen][]"
+                                       value="<?php echo $index; ?>" id="flexCheckDefault<?php echo $index; ?>"></td>
+
+
+                            <td><?php if (!empty($product)) echo $product->getProductid(); ?>
+                            </td>
+                            <td><?php if (!empty($product)) echo $product->getProductname(); ?>
+                            </td>
+                            <td><?php if (!empty($product)) echo $product->getProductsize(); ?>
+
+
+                            </td>
+                            <td><?php if (!empty($product))
+                                    echo $product->getProductversion(); ?>
+                            </td>
+                            <td><?php if (!empty($product)) echo $product->getProductamount(); ?>
+                            </td>
+                            <td><?php if (!empty($product)) echo $product->getProductmount(); ?>
+                            </td>
+                            <td><?php if (!empty($product)) echo $product->getProductcolour(); ?>
+                            </td>
+                            <td><?php if (!empty($product)) echo $product->getProductnotes(); ?>
+                            </td>
+                            <td><?php if (!empty($product)) echo $product->getProductstatus(); ?>
+                            </td>
+                            <input type="hidden" name="model[listall][<?php echo $index; ?>][id]"
+                                   id="flexCheckDefault<?php echo $index; ?>"
+                                   value="">
+                            <input type="hidden" name="model[listall][<?php echo $index; ?>][listid]"
+                                   id="flexCheckDefault<?php echo $index; ?>"
+                                   value="0">
+                            <input type="hidden" name="model[listall][<?php echo $index; ?>][status]"
+                                   id="flexCheckDefault<?php echo $index; ?>"
+                                   value="0">
+                            <input type="hidden" name="model[listall][<?php echo $index; ?>][orderid]"
+                                   id="flexCheckDefault<?php echo $index; ?>"
+                                   value="<?php if (!empty($product)) echo $product->getOrderida(); ?>">
+                            <input type="hidden" name="model[listall][<?php echo $index; ?>][orderyear]"
+                                   id="flexCheckDefault<?php echo $index; ?>"
+                                   value="<?php if (!empty($product)) echo $product->getOrderidb(); ?>">
+                            <input type="hidden" name="model[listall][<?php echo $index; ?>][productamount]"
+                                   id="flexCheckDefault<?php echo $index; ?>"
+                                   value="<?php if (!empty($product)) echo $product->getProductamount(); ?>">
+                            <input type="hidden" name="model[listall][<?php echo $index; ?>][productsize]"
+                                   id="flexCheckDefault<?php echo $index; ?>"
+                                   value="<?php if (!empty($product)) echo $product->getProductsize(); ?>">
+                            <input type="hidden" name="model[listall][<?php echo $index; ?>][producttype]"
+                                   id="flexCheckDefault<?php echo $index; ?>"
+                                   value="<?php if (!empty($product)) echo $product->getProductversion(); ?>">
+                            <input type="hidden" name="model[listall][<?php echo $index; ?>][productname]"
+                                   id="flexCheckDefault<?php echo $index; ?>"
+                                   value="<?php if (!empty($product)) echo $product->getProductname(); ?>"
+
+                        </tr>
+                        <?
+                        $index = $index + 1;
+                    } ?>
+                    </tbody>
+                </table>
+                </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+
+                <?php
+
+
+            }
+        }
+
+
+        ?></div>
+</form>
+
+<button id="allsubmit" form="allforms" class="btn btn-success float-right">Zapisz</button>
+
+<script>
+
+    $("#allsubmit").on("click", function () {
+        $('.myforms').each(function () {
+            $(this).submit();
+
+        });
+    });
+</script>
+
+
+<?php
+include_once('elements/footer.phtml'); ?>

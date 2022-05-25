@@ -1,0 +1,67 @@
+<?php
+
+$projectturningModel = $this->getModel('projectturning');
+
+
+?>
+<div class="tab-pane" id="turning" role="tabpanel" aria-labelledby="turning-tab">
+    <table class="table table-bordered" id="projectturningtable">
+
+        <thead>
+        <tr>
+            <td>#</td>
+            <td>Nazwa detalu</td>
+            <td>Ilość</td>
+            <td>Uwagi</td>
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php
+        if (!empty($project)) {
+
+
+            $projectturnings = $projectturningModel->getMatchingProject($projectindex, $projectversion, $projectsize);
+            $nr = 0;
+            if (!empty($projectturnings)) {
+                foreach ($projectturnings as $nr => $projectturning):?>
+                    <tr>
+                        <input type="hidden" name="model[projectturning][<?php echo $nr; ?>][id]"
+                               value="<?php if (!empty($projectturning)) echo $projectturning->getId(); ?>">
+                        <input type="hidden" name="model[projectturning][<?php echo $nr; ?>][projectid]"
+                               id="model[projectturning][<?php echo $nr; ?>][projectid]"
+                               value="<?php if (!empty($project)) echo $project->getProjectname(); ?>">
+                        <input type="hidden" name="model[projectturning][<?php echo $nr; ?>][projectversion]"
+                               id="model[projectturning][<?php echo $nr; ?>][projectversion]"
+                               value="<?php if (!empty($project)) echo $project->getProjectversion(); ?>">
+                        <input type="hidden" name="model[projectturning][<?php echo $nr; ?>][projectsize]"
+                               id="model[projectturning][<?php echo $nr; ?>][projectsize]"
+                               value="<?php if (!empty($project)) echo $project->getProjectsize(); ?>">
+                        <td><input type="text" class="form-control"
+                                   name="model[projectturning][<?php echo $nr; ?>][turningpartid]"
+                                   id="model[projectturning][<?php echo $nr; ?>][turningpartid]" placeholder=""
+                                   value="<?php if (!empty($projectturning)) echo $projectturning->getTurningpartid(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectturning][<?php echo $nr; ?>][turningpartname]"
+                                   id="model[projectturning][<?php echo $nr; ?>][turningpartname]" placeholder=""
+                                   value="<?php if (!empty($projectturning)) echo $projectturning->getTurningpartname(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectturning][<?php echo $nr; ?>][turningpartamount]"
+                                   id="model[projectturning][<?php echo $nr; ?>][turningpartamount]" placeholder=""
+                                   value="<?php if (!empty($projectturning)) echo $projectturning->getTurningpartamount(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectturning][<?php echo $nr; ?>][turningpartnotes]"
+                                   id="model[projectturning][<?php echo $nr; ?>][turningpartnotes]" placeholder=""
+                                   value="<?php if (!empty($projectturning)) echo $projectturning->getTurningpartnotes(); ?>">
+                        </td>
+                    </tr>
+                <?php endforeach;
+            }
+        }
+        ?>
+        </tbody>
+    </table>
+</div>

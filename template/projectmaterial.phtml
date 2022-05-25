@@ -1,0 +1,90 @@
+<?php
+
+$projectmaterialModel = $this->getModel('projectmaterial');
+
+
+?>
+<div class="tab-pane" id="material" role="tabpanel" aria-labelledby="material-tab">
+    <table class="table table-bordered" id="projectmaterialtable">
+
+        <thead>
+        <tr>
+            <td>#</td>
+            <td>Nazwa detalu</td>
+            <td>Ilość</td>
+            <td>Wymiar A</td>
+            <td>Wymiar B</td>
+            <td>Długość</td>
+
+
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php
+        if (!empty($project)) {
+
+            $projectmaterials = $projectmaterialModel->getMatchingProject($projectindex, $projectversion, $projectsize);
+            $nr = 0;
+            if (!empty($projectmaterials)) {
+                foreach ($projectmaterials as $nr => $projectmaterial):?>
+                    <tr>
+                        <input type="hidden" name="model[projectmaterial][<?php echo $nr; ?>][id]"
+                               value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getId(); ?>">
+                        <input type="hidden" name="model[projectmaterial][<?php echo $nr; ?>][projectid]"
+                               id="model[projectmaterial][<?php echo $nr; ?>][projectid]"
+                               value="<?php if (!empty($project)) echo $project->getProjectname(); ?>">
+                        <input type="hidden" name="model[projectmaterial][<?php echo $nr; ?>][projectsize]"
+                               id="model[projectmaterial][<?php echo $nr; ?>][projectsize]"
+                               value="<?php if (!empty($project)) echo $project->getProjectsize(); ?>">
+                        <input type="hidden" name="model[projectmaterial][<?php echo $nr; ?>][projectversion]"
+                               id="model[projectmaterial][<?php echo $nr; ?>][projectversion]"
+                               value="<?php if (!empty($project)) echo $project->getProjectversion(); ?>">
+                        <td><input type="text" class="form-control"
+                                   name="model[projectmaterial][<?php echo $nr; ?>][materialid]"
+                                   id="model[projectmaterial][<?php echo $nr; ?>][materialid]" placeholder=""
+                                   value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialid(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectmaterial][<?php echo $nr; ?>][materialtype]"
+                                   id="model[projectmaterial][<?php echo $nr; ?>][materialtype]" placeholder=""
+                                   value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialtype(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectmaterial][<?php echo $nr; ?>][materialamount]"
+                                   id="model[projectmaterial][<?php echo $nr; ?>][laserpartamount]" placeholder=""
+                                   value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialamount(); ?>">
+                        </td>
+                        <!--                        <td><input type="text" class="form-control"-->
+                        <!--                                   name="model[projectmaterial][--><?php //echo $nr;
+                        ?><!--][materialtypeunit]"-->
+                        <!--                                   id="model[projectmaterial][--><?php //echo $nr;
+                        ?><!--][materialtypenit]"-->
+                        <!--                                   placeholder=""-->
+                        <!--                                   value="-->
+                        <?php //if (!empty($projectmaterial)) echo $projectmaterial->getMaterialtypeunit();
+                        ?><!--">-->
+                        <!--                        </td>-->
+                        <td><input type="text" class="form-control"
+                                   name="model[projectmaterial][<?php echo $nr; ?>][materialdimensiona]"
+                                   id="model[projectmaterial][<?php echo $nr; ?>][materialdimensiona]" placeholder=""
+                                   value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialdimensiona(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectmaterial][<?php echo $nr; ?>][materialdimensionb]"
+                                   id="model[projectmaterial][<?php echo $nr; ?>][materialdimensionb]" placeholder=""
+                                   value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialdimensionb(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectmaterial][<?php echo $nr; ?>][materiallength]"
+                                   id="model[projectmaterial][<?php echo $nr; ?>][materiallength]" placeholder=""
+                                   value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMateriallength(); ?>">
+                        </td>
+                    </tr>
+                <?php endforeach;
+            }
+        }
+        ?>
+        </tbody>
+    </table>
+</div>

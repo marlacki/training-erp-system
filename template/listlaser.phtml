@@ -1,0 +1,44 @@
+<?php
+
+$listlaserModel = $this->getModel('listlaser');
+$listlasers=$listlaserModel->getAll();
+
+?>
+
+<?php include_once('elements/head.phtml'); ?>
+<?php include_once('elements/menu.phtml'); ?>
+
+
+    <table class="table">
+        <thead class="table-dark">
+            <tr>
+                <td>#</td>
+                <td>Nazwa detalu</td>
+                <td>Grubość</td>
+                <td>Ilośc</td>
+            </tr>
+            </thead>
+            <tbody>
+
+            <?php
+            if (!empty($listlasers)) {
+
+
+                foreach ($listlasers as $nr => $listlaser):?>
+
+
+                    <tr>
+                        <th><?php echo $nr+1; ?></th>
+                        <td><?php echo $listlaser->getLaserpartname(); ?></td>
+                        <td><?php echo $listlaser->getLaserpartthickness(); ?></td>
+                        <td><?php echo $a=$listlaser->getLaserpartamount();
+//                        $b=$listlaser->getProductamount(); $c=$a*$b; echo $c;?><!--</td>-->
+                    </tr>
+                <?php endforeach;
+
+            }
+            ?>
+            </tbody>
+        </table>
+
+<?php include_once('elements/footer.phtml'); ?>

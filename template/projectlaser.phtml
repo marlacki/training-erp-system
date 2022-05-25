@@ -1,0 +1,73 @@
+<?php
+
+$projectlaserModel = $this->getModel('projectlaser');
+
+
+?>
+
+<div class="tab-pane show active" id="laser" role="tabpanel" aria-labelledby="settings-tab">
+    <table class="table table-bordered" id="projectlasertable">
+
+        <thead>
+        <tr>
+            <td>#</td>
+            <td>Nazwa detalu</td>
+            <td>Ilość</td>
+            <td>Grubość</td>
+            <td>Uwagi</td>
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php
+        if (!empty($project)) {
+
+            $projectlasers = $projectlaserModel->getMatchingProject($projectindex, $projectversion, $projectsize);
+            $nr = 0;
+            if (!empty($projectlasers)) {
+                foreach ($projectlasers as $nr => $projectlaser):?>
+                    <tr>
+                        <input type="hidden" name="model[projectlaser][<?php echo $nr; ?>][id]"
+                               value="<?php if (!empty($projectlaser)) echo $projectlaser->getId(); ?>">
+                        <input type="hidden" name="model[projectlaser][<?php echo $nr; ?>][projectid]"
+                               id="model[projectlaser][<?php echo $nr; ?>][projectid]"
+                               value="<?php if (!empty($project)) echo $project->getProjectname(); ?>">
+                        <input type="hidden" name="model[projectlaser][<?php echo $nr; ?>][projectsize]"
+                               id="model[projectlaser][<?php echo $nr; ?>][projectsize]"
+                               value="<?php if (!empty($project)) echo $project->getProjectsize(); ?>">
+                        <input type="hidden" name="model[projectlaser][<?php echo $nr; ?>][projectversion]"
+                               id="model[projectlaser][<?php echo $nr; ?>][projectversion]"
+                               value="<?php if (!empty($project)) echo $project->getProjectversion(); ?>">
+                        <td><input type="text" class="form-control"
+                                   name="model[projectlaser][<?php echo $nr; ?>][laserpartid]"
+                                   id="model[projectlaser][<?php echo $nr; ?>][laserpartid]" placeholder=""
+                                   value="<?php if (!empty($projectlaser)) echo $projectlaser->getLaserpartid(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectlaser][<?php echo $nr; ?>][laserpartname]"
+                                   id="model[projectlaser][<?php echo $nr; ?>][laserpartname]" placeholder=""
+                                   value="<?php if (!empty($projectlaser)) echo $projectlaser->getLaserpartname(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectlaser][<?php echo $nr; ?>][laserpartamount]"
+                                   id="model[projectlaser][<?php echo $nr; ?>][laserpartamount]" placeholder=""
+                                   value="<?php if (!empty($projectlaser)) echo $projectlaser->getLaserpartamount(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectlaser][<?php echo $nr; ?>][laserpartthickness]"
+                                   id="model[projectlaser][<?php echo $nr; ?>][laserpartthickness]" placeholder=""
+                                   value="<?php if (!empty($projectlaser)) echo $projectlaser->getLaserpartthickness(); ?>">
+                        </td>
+                        <td><input type="text" class="form-control"
+                                   name="model[projectlaser][<?php echo $nr; ?>][laserpartnotes]"
+                                   id="model[projectlaser][<?php echo $nr; ?>][laserpartnotes]" placeholder=""
+                                   value="<?php if (!empty($projectlaser)) echo $projectlaser->getLaserpartnotes(); ?>">
+                        </td>
+                    </tr>
+                <?php endforeach;
+            }
+        }
+        ?>
+        </tbody>
+    </table>
+</div>

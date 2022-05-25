@@ -1,0 +1,298 @@
+<?php
+/**
+ * @var $this Template
+ * @var $contactsModel ProductModel
+ * @var $categoriesModel ShopingCartModel
+ */
+
+
+$listallModel = $this->getModel('listall');
+$listlaserModel = $this->getModel('listlaser');
+$listmaterialModel = $this->getModel('listmaterial');
+$listbuypartModel = $this->getModel('listbuypart');
+$projectbuypartModel = $this->getModel('projectbuypart');
+$projectlaserModel = $this->getModel('projectlaser');
+$projectmaterialModel = $this->getModel('projectmaterial');
+/**
+ * @var $contacts array of Product
+ */
+
+
+?>
+
+<?php include_once('elements/head.phtml'); ?>
+
+<?php include_once('elements/menu.phtml'); ?>
+
+
+<h1>
+    <small><?php echo "Przygotuj listy"; ?></small>
+</h1>
+<hr>
+<table id="table" class="table table-striped table-hover">
+
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Produkt</th>
+        <th>Rozmiar</th>
+        <th>Wersja</th>
+        <th>Ilość</th>
+        <th>Nr zamówienia</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <form name="form" id="form" method="post" class="myforms">
+
+        <?php
+        /**
+         * @var $order Order
+         */
+
+        foreach ($listallModel->getAll() as $nr => $lists) {
+            if (!empty($lists)) {
+                $projectindex = $lists->getProductname();
+                $projectsize = $lists->getProductsize();
+                $projectversion = $lists->getProducttype();
+            }
+
+            ?>
+            <tr>
+                <th scope="row"><?php echo $nr + 1; ?></th>
+
+                <td><?php if (!empty($lists)) echo $lists->getProductname(); ?></td>
+                <td><?php if (!empty($lists)) echo $lists->getProductsize(); ?></td>
+                <td><?php if (!empty($lists)) echo $lists->getProducttype(); ?></td>
+                <td><?php if (!empty($lists)) echo $lists->getProductamount(); ?></td>
+                <td><?php if (!empty($lists)) echo $lists->getOrderid() . "/" . $lists->getOrderyear(); ?></td>
+
+
+            </tr>
+
+            <?php
+
+
+            $projectlasers = $projectlaserModel->getMatchingProject($projectindex, $projectversion, $projectsize);
+            $nr = 0;
+            if (!empty($projectlasers)) {
+                foreach ($projectlasers as $nr => $projectlaser) {
+                    ?>
+
+                    <input type="hidden" name="model[listlaser][<?php echo $nr; ?>][id]"
+                           value="">
+                    <input type="hidden" name="model[listlaser][<?php echo $nr; ?>][status]"
+                           value="<?php if (!empty($lists)) echo $lists->getStatus(); ?>">
+                    <input type="hidden" name="model[listlaser][<?php echo $nr; ?>][listid]"
+                           value="<?php if (!empty($lists)) echo $lists->getListid(); ?>">
+                    <input type="hidden" name="model[listlaser][<?php echo $nr; ?>][productsize]"
+                           value="<?php if (!empty($lists)) echo $lists->getProductsize(); ?>">
+                    <input type="hidden" name="model[listlaser][<?php echo $nr; ?>][producttype]"
+                           value="<?php if (!empty($lists)) echo $lists->getProducttype(); ?>">
+                    <input type="hidden" name="model[listlaser][<?php echo $nr; ?>][productname]"
+                           id="model[listlaser][<?php echo $nr; ?>][productname]"
+                           value="<?php if (!empty($lists)) echo $lists->getProductname(); ?>">
+                    <input type="hidden" name="model[listlaser][<?php echo $nr; ?>][orderyear]"
+                           id="model[listlaser][<?php echo $nr; ?>][orderyear]"
+                           value="<?php if (!empty($lists)) echo $lists->getOrderyear(); ?>">
+                    <input type="hidden" name="model[listlaser][<?php echo $nr; ?>][orderid]"
+                           id="model[listlaser][<?php echo $nr; ?>][orderid]"
+                           value="<?php if (!empty($lists)) echo $lists->getOrderid(); ?>">
+                    <input type="hidden" name="model[listlaser][<?php echo $nr; ?>][productamount]"
+                           id="model[listlaser][<?php echo $nr; ?>][productamount]"
+                           value="<?php if (!empty($lists)) echo $lists->getOrderid(); ?>">
+
+
+                    <input type="hidden" class="form-control"
+                           name="model[listlaser][<?php echo $nr; ?>][laserpartid]"
+                           id="model[listlaser][<?php echo $nr; ?>][laserpartid]" placeholder=""
+                           value="<?php if (!empty($projectlaser)) echo $projectlaser->getLaserpartid(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listlaser][<?php echo $nr; ?>][laserpartname]"
+                           id="model[listlaser][<?php echo $nr; ?>][laserpartname]" placeholder=""
+                           value="<?php if (!empty($projectlaser)) echo $projectlaser->getLaserpartname(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listlaser][<?php echo $nr; ?>][laserpartamount]"
+                           id="model[listlaser][<?php echo $nr; ?>][laserpartamount]" placeholder=""
+                           value="<?php if (!empty($projectlaser)) echo $projectlaser->getLaserpartamount(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listlaser][<?php echo $nr; ?>][laserpartthickness]"
+                           id="model[listlaser][<?php echo $nr; ?>][laserpartthickness]" placeholder=""
+                           value="<?php if (!empty($projectlaser)) echo $projectlaser->getLaserpartthickness(); ?>">
+
+
+                <?php }
+
+            }
+            ?>
+
+            <?php
+
+
+            $projectbuyparts = $projectbuypartModel->getMatchingProject($projectindex, $projectversion, $projectsize);
+
+            $nr = 0;
+            if (!empty($projectbuyparts)) {
+                foreach ($projectbuyparts as $nr => $projectbuypart) {
+                    ?>
+
+                    <input type="hidden" name="model[listbuypart][<?php echo $nr; ?>][id]"
+                           value="">
+                    <input type="hidden" name="model[listbuypart][<?php echo $nr; ?>][listid]"
+                           value="<?php if (!empty($lists)) echo $lists->getListid(); ?>">
+                    <input type="hidden" name="model[listbuypart][<?php echo $nr; ?>][status]"
+                           value="<?php if (!empty($lists)) echo $lists->getStatus(); ?>">
+                    <input type="hidden" name="model[listbuypart][<?php echo $nr; ?>][productsize]"
+                           value="<?php if (!empty($lists)) echo $lists->getProductsize(); ?>">
+                    <input type="hidden" name="model[listbuypart][<?php echo $nr; ?>][producttype]"
+                           value="<?php if (!empty($lists)) echo $lists->getProducttype(); ?>">
+                    <input type="hidden" name="model[listbuypart][<?php echo $nr; ?>][productname]"
+                           id="model[listbuypart][<?php echo $nr; ?>][productname]"
+                           value="<?php if (!empty($lists)) echo $lists->getProductname(); ?>">
+                    <input type="hidden" name="model[listbuypart][<?php echo $nr; ?>][orderyear]"
+                           id="model[listbuypart][<?php echo $nr; ?>][orderyear]"
+                           value="<?php if (!empty($lists)) echo $lists->getOrderyear(); ?>">
+                    <input type="hidden" name="model[listbuypart][<?php echo $nr; ?>][orderid]"
+                           id="model[listbuypart][<?php echo $nr; ?>][orderid]"
+                           value="<?php if (!empty($lists)) echo $lists->getOrderid(); ?>">
+                    <input type="hidden" class="form-control"
+                           name="model[listbuypart][<?php echo $nr; ?>][buypartid]"
+                           id="model[listbuypart][<?php echo $nr; ?>][buypartid]" placeholder=""
+                           value="<?php if (!empty($projectbuypart)) echo $projectbuypart->getBuypartid(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listbuypart][<?php echo $nr; ?>][buypartname]"
+                           id="model[listbuypart][<?php echo $nr; ?>][buypartname]" placeholder=""
+                           value="<?php if (!empty($projectbuypart)) echo $projectbuypart->getBuypartname(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listbuypart][<?php echo $nr; ?>][buypartamount]"
+                           id="model[listbuypart][<?php echo $nr; ?>][buypartamount]" placeholder=""
+                           value="<?php if (!empty($projectbuypart)) echo $projectbuypart->getBuypartamount(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listbuypart][<?php echo $nr; ?>][buypartsize]"
+                           id="model[listbuypart][<?php echo $nr; ?>][buypartsize]" placeholder=""
+                           value="<?php if (!empty($projectbuypart)) echo $projectbuypart->getBuypartsize(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listbuypart][<?php echo $nr; ?>][buypartdima]"
+                           id="model[listbuypart][<?php echo $nr; ?>][buypartdima]" placeholder=""
+                           value="<?php if (!empty($projectbuypart)) echo $projectbuypart->getBuypartdima(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listbuypart][<?php echo $nr; ?>][buypartdimb]"
+                           id="model[listbuypart][<?php echo $nr; ?>][buypartdimb]" placeholder=""
+                           value="<?php if (!empty($projectbuypart)) echo $projectbuypart->getBuypartdimb(); ?>">
+                    <input type="hidden" class="form-control"
+                           name="model[listbuypart][<?php echo $nr; ?>][buyparttype]"
+                           id="model[listbuypart][<?php echo $nr; ?>][buyparttype]" placeholder=""
+                           value="<?php if (!empty($projectbuypart)) echo $projectbuypart->getBuyparttype(); ?>">
+
+
+                    <input type="hidden" class="form-control"
+                           name="model[listbuypart][<?php echo $nr; ?>][buypartnotes]"
+                           id="model[listbuypart][<?php echo $nr; ?>][buypartnotes]" placeholder=""
+                           value="<?php if (!empty($projectbuypart)) echo $projectbuypart->getBuypartnotes(); ?>">
+
+
+                <?php }
+            }
+
+
+            ?>
+
+            <?php
+
+
+            $projectmaterials = $projectmaterialModel->getMatchingProject($projectindex, $projectversion, $projectsize);
+            $nr = 0;
+            if (!empty($projectmaterials)) {
+                foreach ($projectmaterials as $nr => $projectmaterial) {
+                    ?>
+
+                    <input type="hidden" name="model[listmaterial][<?php echo $nr; ?>][id]"
+                           value="">
+                    <input type="hidden" name="model[listmaterial][<?php echo $nr; ?>][status]"
+                           value="<?php if (!empty($lists)) echo $lists->getStatus(); ?>">
+                    <input type="hidden" name="model[listmaterial][<?php echo $nr; ?>][listid]"
+                           value="<?php if (!empty($lists)) echo $lists->getListid(); ?>">
+                    <input type="hidden" name="model[listmaterial][<?php echo $nr; ?>][productsize]"
+                           value="<?php if (!empty($lists)) echo $lists->getProductsize(); ?>">
+                    <input type="hidden" name="model[listmaterial][<?php echo $nr; ?>][producttype]"
+                           value="<?php if (!empty($lists)) echo $lists->getProducttype(); ?>">
+                    <input type="hidden" name="model[listmaterial][<?php echo $nr; ?>][productname]"
+                           id="model[listmaterial][<?php echo $nr; ?>][productname]"
+                           value="<?php if (!empty($lists)) echo $lists->getProductname(); ?>">
+                    <input type="hidden" name="model[listmaterial][<?php echo $nr; ?>][orderyear]"
+                           id="model[listmaterial][<?php echo $nr; ?>][orderyear]"
+                           value="<?php if (!empty($lists)) echo $lists->getOrderyear(); ?>">
+                    <input type="hidden" name="model[listmaterial][<?php echo $nr; ?>][orderid]"
+                           id="model[listmaterial][<?php echo $nr; ?>][orderid]"
+                           value="<?php if (!empty($lists)) echo $lists->getOrderid(); ?>">
+                    <input type="hidden" name="model[listmaterial][<?php echo $nr; ?>][productamount]"
+                           id="model[listmaterial][<?php echo $nr; ?>][productamount]"
+                           value="<?php if (!empty($lists)) echo $lists->getOrderid(); ?>">
+                    <input type="hidden" class="form-control"
+                           name="model[listmaterial][<?php echo $nr; ?>][materialid]"
+                           id="model[listmaterial][<?php echo $nr; ?>][materialid]" placeholder=""
+                           value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialid(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listmaterial][<?php echo $nr; ?>][materialtype]"
+                           id="model[listmaterial][<?php echo $nr; ?>][materialtype]" placeholder=""
+                           value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialtype(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listmaterial][<?php echo $nr; ?>][materialamount]"
+                           id="model[listmaterial][<?php echo $nr; ?>][laserpartamount]" placeholder=""
+                           value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialamount(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listmaterial][<?php echo $nr; ?>][materialdimensiona]"
+                           id="model[listmaterial][<?php echo $nr; ?>][materialdimensiona]" placeholder=""
+                           value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialdimensiona(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listmaterial][<?php echo $nr; ?>][materialdimensionb]"
+                           id="model[listmaterial][<?php echo $nr; ?>][materialdimensionb]" placeholder=""
+                           value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialdimensionb(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listmaterial][<?php echo $nr; ?>][materiallength]"
+                           id="model[listmaterial][<?php echo $nr; ?>][materiallength]" placeholder=""
+                           value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMateriallength(); ?>">
+
+                    <input type="hidden" class="form-control"
+                           name="model[listmaterial][<?php echo $nr; ?>][materialthickness]"
+                           id="model[listmaterial][<?php echo $nr; ?>][materialthickness]"
+                           placeholder=""
+                           value="<?php if (!empty($projectmaterial)) echo $projectmaterial->getMaterialthickness(); ?>">
+
+                <?php }
+
+            }
+        }
+
+
+        ?></form>
+    </tbody>
+
+</table>
+<button id="allsubmit" class="btn btn-success float-right">Generuj listy</button>
+<script>
+
+    $("#allsubmit").on("click", function () {
+        $('.myforms').each(function () {
+            $(this).submit();
+
+        });
+    });
+</script>
+
+
+
+<?php include_once('elements/footer.phtml'); ?>
